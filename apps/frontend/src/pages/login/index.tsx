@@ -1,9 +1,9 @@
 import { Form, Input, Button, Checkbox, Flex } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCreation, useRequest } from "ahooks";
-import { setAccessToken } from "@/api/common";
 import { request } from "@/api";
+import { loginSuccess } from "../utils";
 
 const LOGINPARAMS_KEY = "login_params";
 
@@ -13,51 +13,26 @@ interface LoginParams {
   remember: boolean;
 }
 
-const ACCESS_TOKEN_KEY = "access_token";
-
-function setUrlParams(url: string, params: Record<string, string>) {
-  const urlObj = new URL(url);
-  Object.entries(params).forEach(([key, value]) => {
-    urlObj.searchParams.set(key, value);
-  });
-  return urlObj.toString();
-}
-
 export default function Login() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [searchParams] = useSearchParams();
 
   const { runAsync: onFinishAsync, loading } = useRequest(
     async (values: LoginParams) => {
-      // TODO: 登录接口
-      const res = await request({
-        url: "/api/account/login",
+      const res = await request<LoginUserVo>({
+        method: "POST",
+        url: "/user/login",
         data: values,
       });
-      const token = "111";
+      const token = res.accessToken;
 
-      setAccessToken(token);
+      loginSuccess(token);
 
       // 如果记住密码，保存到 localStorage
       if (values.remember) {
         localStorage.setItem(LOGINPARAMS_KEY, JSON.stringify(values));
       } else {
         localStorage.removeItem(LOGINPARAMS_KEY);
-      }
-
-      // 获取 redirect 参数
-      const redirect = decodeURIComponent(searchParams.get("redirect") || "/");
-      try {
-        // 修改为重定向回去
-        location.replace(
-          setUrlParams(redirect, {
-            [ACCESS_TOKEN_KEY]: token,
-          })
-        );
-      } catch (error) {
-        // 相对路径
-        console.error(error);
       }
     },
     {
@@ -113,7 +88,16 @@ export default function Login() {
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox>记住密码</Checkbox>
             </Form.Item>
-            <a onClick={() => navigate("/register")}>立即注册</a>
+            <a
+              onClick={() =>
+                navigate({
+                  pathname: "/register",
+                  search: location.search,
+                })
+              }
+            >
+              立即注册
+            </a>
           </Flex>
         </Form.Item>
 

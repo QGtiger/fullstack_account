@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useBoolean, useRequest } from "ahooks";
 import EmailVerification from "./EmailVerification";
 import { useEffect } from "react";
+import { request } from "@/api";
+import { loginSuccess } from "../utils";
 
 interface RegisterParams {
   username: string;
   email: string;
-  verificationCode: string;
+  captcha: string;
   password: string;
   confirmPassword: string;
 }
@@ -21,7 +23,6 @@ export default function Register() {
   const emailValue = Form.useWatch("email", form);
 
   useEffect(() => {
-    console.log(emailValue);
     form
       .validateFields(["email"], {
         validateOnly: true,
@@ -32,9 +33,14 @@ export default function Register() {
   // 发送邮箱验证码
   const { runAsync: sendVerificationCode } = useRequest(
     async () => {
-      return form.validateFields(["email"]).then((value) => {
-        console.log(value);
-        // TODO: 调用发送验证码接口
+      return form.validateFields(["email"]).then(async (value) => {
+        await request({
+          url: "/email/code",
+          params: {
+            address: value.email,
+          },
+        });
+        message.success("发送验证码成功");
       });
     },
     {
@@ -45,11 +51,12 @@ export default function Register() {
   // 注册
   const { runAsync: onFinishAsync, loading } = useRequest(
     async (values: RegisterParams) => {
-      // TODO: 调用注册接口
-      console.log("注册信息:", values);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      message.success("注册成功！");
-      navigate("/login");
+      const res = await request<LoginUserVo>({
+        method: "POST",
+        url: "/user/register",
+        data: values,
+      });
+      loginSuccess(res.accessToken);
     },
     {
       manual: true,
@@ -97,7 +104,7 @@ export default function Register() {
         </Form.Item>
 
         <Form.Item
-          name="verificationCode"
+          name="captcha"
           className="mb-4!"
           rules={[
             { required: true, message: "请输入邮箱验证码" },
