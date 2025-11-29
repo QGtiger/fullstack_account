@@ -40,7 +40,7 @@ import { CommonInterceptor } from './common/common.interceptor';
           password: configService.get('MYSQL_SERVER_PASSWORD'),
           database: configService.get('MYSQL_SERVER_DATABASE'),
           synchronize: true,
-          logging: true,
+          logging: false,
           entities: [User],
           poolSize: 10,
           connectorPackage: 'mysql2',
