@@ -1,0 +1,54 @@
+# 构建阶段
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# 安装 pnpm
+RUN npm install -g pnpm@8.15.0
+
+# 复制根目录的 package 文件（用于 workspace 配置）
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# 复制后端项目的 package.json
+COPY apps/backend/package.json ./apps/backend/
+
+# 安装依赖（workspace 模式）
+RUN pnpm config set registry https://registry.npmmirror.com && pnpm install --frozen-lockfile
+
+# 复制后端源代码
+COPY apps/backend ./apps/backend
+
+# 构建后端应用
+WORKDIR /app/apps/backend
+RUN pnpm build
+
+# 生产阶段
+FROM node:20-alpine
+
+WORKDIR /app
+
+# 安装 pnpm 和健康检查工具
+RUN npm install -g pnpm@8.15.0 && \
+    apk add --no-cache curl
+
+# 复制根目录的 package 文件
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# 复制后端项目的 package.json
+COPY apps/backend/package.json ./apps/backend/
+
+# 只安装生产依赖
+RUN pnpm config set registry https://registry.npmmirror.com && pnpm install --frozen-lockfile --prod
+
+# 复制构建产物
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+
+# 设置工作目录
+WORKDIR /app/apps/backend
+
+# 暴露端口
+EXPOSE 3000
+
+# 启动应用
+CMD ["node", "dist/main"]
+
