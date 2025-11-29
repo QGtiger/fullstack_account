@@ -1,0 +1,71 @@
+# 依赖目录
+node_modules
+**/node_modules
+**/dist
+**/.next
+**/.nuxt
+
+# Git 相关
+.git
+.gitignore
+.gitattributes
+
+# 环境变量文件
+.env
+.env.*
+!.env.example
+**/.env.local
+**/.env.*.local
+
+# 日志文件
+*.log
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 系统文件
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# IDE 配置
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 测试和覆盖率
+coverage
+**/coverage
+.nyc_output
+**/.nyc_output
+
+# Docker 相关文件（避免递归复制）
+**/Dockerfile*
+**/.dockerignore
+**/docker-compose*.yaml
+
+# 文档
+README.md
+**/README.md
+
+# 临时文件
+*.tmp
+*.temp
+.cache
+**/.cache
+
+# 构建产物（会在 Dockerfile 中重新构建）
+apps/backend/dist
+apps/frontend/dist
+
+# TypeScript 构建信息
+**/tsconfig.build.tsbuildinfo
+
+# 其他构建工具
+.eslintcache
+**/.eslintcache
+
