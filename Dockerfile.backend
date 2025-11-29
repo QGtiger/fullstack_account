@@ -28,8 +28,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # 安装 pnpm 和健康检查工具
-RUN npm install -g pnpm@8.15.0 && \
-    apk add --no-cache curl
+RUN npm install -g pnpm@8.15.0
 
 # 复制根目录的 package 文件
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./

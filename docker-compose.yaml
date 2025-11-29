@@ -37,7 +37,7 @@ services:
     environment:
       - NODE_ENV=production
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000 || exit 1"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
       interval: 30s # 每30秒检查一次
       timeout: 10s  # 超时时间10秒
       retries: 3    # 最多重试3次
