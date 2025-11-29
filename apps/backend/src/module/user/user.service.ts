@@ -91,9 +91,12 @@ export class UserService {
   }
 
   async register(registerUserDto: RegisterUserDto) {
+    console.log('registerUserDto', registerUserDto);
+    console.log('captcha', `captcha_${registerUserDto.email}`);
     const captcha = await this.redisService.get(
       `captcha_${registerUserDto.email}`,
     );
+    console.log('captcha', captcha);
 
     if (!captcha) {
       throw new HttpException('验证码已过期，请重试', HttpStatus.BAD_REQUEST);
