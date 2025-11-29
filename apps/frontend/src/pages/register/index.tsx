@@ -163,7 +163,16 @@ export default function Register() {
 
         <Form.Item className="mb-0!">
           <Flex justify="center">
-            <a onClick={() => navigate("/login")}>已有账号？立即登录</a>
+            <a
+              onClick={() =>
+                navigate({
+                  pathname: "/login",
+                  search: location.search,
+                })
+              }
+            >
+              已有账号？立即登录
+            </a>
           </Flex>
         </Form.Item>
       </Form>
