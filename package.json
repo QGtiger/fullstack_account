@@ -10,6 +10,7 @@
     "lint": "pnpm --filter './{apps,packages}/*' lint"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "typescript": "^5.3.3"
   },
   "engines": {
@@ -18,4 +19,3 @@
   },
   "packageManager": "pnpm@8.15.0"
 }
-
