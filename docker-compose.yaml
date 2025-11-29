@@ -32,19 +32,10 @@ services:
     networks:
       - shared-network
     restart: unless-stopped
+    env_file:
+      - ./apps/backend/.env  # 从 backend/.env 文件加载环境变量
     environment:
       - NODE_ENV=production
-      # MySQL 配置（连接到外部 MySQL 容器）
-      - MYSQL_SERVER_HOST=${MYSQL_SERVER_HOST:-mysql}
-      - MYSQL_SERVER_PORT=${MYSQL_SERVER_PORT:-3306}
-      - MYSQL_SERVER_USER=${MYSQL_SERVER_USER:-root}
-      - MYSQL_SERVER_PASSWORD=${MYSQL_SERVER_PASSWORD:-password}
-      - MYSQL_SERVER_DATABASE=${MYSQL_SERVER_DATABASE:-account_db}
-      # Redis 配置（连接到外部 Redis 容器）
-      - REDIS_SERVER_HOST=${REDIS_SERVER_HOST:-redis}
-      - REDIS_SERVER_PORT=${REDIS_SERVER_PORT:-6379}
-      # JWT 配置
-      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000 || exit 1"]
       interval: 30s # 每30秒检查一次
